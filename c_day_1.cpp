@@ -18,12 +18,12 @@ int strcmpx(const char * str1, const char * str2);
 
 void showMenu();
 void showContacts(MailList *mail);
-int getTrueIndex();
+int getTrueIndex(MailList * mail, string name);
 void addContact(MailList *mail, contacts c);
-void removeContact(MailList mail, string name);
-contacts queryContact(MailList mail, string name);
+void removeContact(MailList *mail, string name);
+contacts queryContact(MailList *mail, string name);
 void removeContact(int index, MailList mail);
-void modifyContact(MailList mail, string name);
+void modifyContact(MailList *mail, string name);
 
 int main()
 {
@@ -59,9 +59,11 @@ int main()
             break;
             case 2:
             {
+                cout << "enter name: " << endl;
                 string name = "";
-                string phone = "";
                 cin >> name;
+                cout << "enter phone: " << endl;
+                string phone = "";
                 cin >> phone;
                 contacts c = {
                     name,
@@ -72,10 +74,18 @@ int main()
             }
             case 3:
             {
+                cout << "enter name: " << endl;
+                string name = "";
+                cin >> name;
+                removeContact(&mail, name);
+                break;
+            }
+            case 4:
+            {
                 string name = "";
                 cout << "query : " << endl;
                 cin >> name;
-                contacts c = queryContact(mail, name);
+                contacts c = queryContact(&mail, name);
                 if (strcmpx(c.name.c_str(), "null") == 0)
                 {
                     cout << "not found" << endl;
@@ -86,7 +96,7 @@ int main()
                 }
                 break;
             }
-            case 4:
+            case 5:
             {
                 return 0;
                 break;
@@ -130,8 +140,9 @@ void showMenu()
     cout << "******" << endl;
     cout << "1.foreach information" << endl;
     cout << "2.add a contact" << endl;
-    cout << "3.query information" << endl;
-    cout << "4.exit" << endl;
+    cout << "3.remove a contact" << endl;
+    cout << "4.query information" << endl;
+    cout << "5.exit" << endl;
     cout << "******" << endl;
 }
 
@@ -161,12 +172,12 @@ void addContact(MailList *mail, contacts c)
     cout << "success" << endl;
 }
 
-int getTrueIndex(MailList mail, string name)
+int getTrueIndex(MailList * mail, string name)
 {
     int index = -1;
-    for (int i = 0; i < mail.mailSize; i++)
+    for (int i = 0; i < mail -> mailSize; i++)
     {
-        if (strcmpx(mail.contactArray[i].name.c_str(), name.c_str()) == 0)
+        if (strcmpx(mail -> contactArray[i].name.c_str(), name.c_str()) == 0)
         {
             index = i;
             break;
@@ -175,22 +186,25 @@ int getTrueIndex(MailList mail, string name)
     return index;
 }
 
-// void removeContact(MailList mail, string name)
-// {
-//     int index = getTrueIndex(mail, name);
-//     if (index != -1)
-//     {
-//         mail.contactArray[index].name = "";
-//         mail.contactArray[index].phone = "";
-//         mail.mailSize --;
-//     } 
-//     else 
-//     {
-//         cout << "not found" << endl;
-//     }
-// }
+void removeContact(MailList * mail, string name)
+{
+    int index = getTrueIndex(mail, name);
+    if (index != -1)
+    {
+        for (int i = index; i < mail -> mailSize; i ++)
+        {
+            mail -> contactArray[i] = mail -> contactArray[i + 1];
+        }
+        mail -> mailSize --;
+        cout << "remove success" << endl;
+    } 
+    else 
+    {
+        cout << "not found" << endl;
+    }
+}
 
-contacts queryContact(MailList mail, string name)
+contacts queryContact(MailList * mail, string name)
 {
     contacts c = {
         "null",
@@ -199,8 +213,8 @@ contacts queryContact(MailList mail, string name)
     int index = getTrueIndex(mail, name);
     if (index != -1)
     {
-        c.name = mail.contactArray[index].name;
-        c.phone = mail.contactArray[index].phone;
+        c.name = mail -> contactArray[index].name;
+        c.phone = mail -> contactArray[index].phone;
         return c;
     }
     return c;
@@ -218,12 +232,12 @@ contacts queryContact(MailList mail, string name)
 //     mail.mailSize --;
 // }
 
-void modifyContact(MailList mail, string name, string phone)
+void modifyContact(MailList * mail, string name, string phone)
 {
     int index = getTrueIndex(mail, name);
     if (index != -1)
     {
-        mail.contactArray[index].name = name;
-        mail.contactArray[index].phone = phone;
+        mail -> contactArray[index].name = name;
+        mail -> contactArray[index].phone = phone;
     } 
 }
